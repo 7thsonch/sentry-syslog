@@ -210,7 +210,7 @@ def main(args=None):
     )
 
     kwargs = {
-        arg: value for arg, value in vars(args).items() if arg not in {"sentry_dsn"}
+        arg: value for arg, value in vars(args).items() if arg not in {"sentry_dsn","sentry_environment"}
     }
     with args.input_file:
         return run(**kwargs)
