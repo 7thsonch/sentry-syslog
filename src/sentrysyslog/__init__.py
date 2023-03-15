@@ -92,6 +92,15 @@ parser.add_argument(
     ),
 )
 parser.add_argument(
+    "--sentry-environment",
+    "-t",
+    default="unspecified",
+    help=(
+        "Set environment tag for Sentry. "
+        "(default: unspecified)"
+    ),
+)
+parser.add_argument(
     "sentry_dsn", help=("The DSN or client key for your Sentry project."),
 )
 
@@ -123,9 +132,13 @@ def log_syslog_line(syslog_line, event_level=parser.get_default("event_level")):
         # included
         kwargs = dict(extra=syslog_fields)
 
-    logging.getLogger("{facility}.{appname}".format(**syslog_msg_dict)).log(
+    logger.log(
         level, syslog_msg.msg, *args, **kwargs
     )
+    # original code:
+    # logging.getLogger("{facility}.{appname}".format(**syslog_msg_dict)).log(
+    #     level, syslog_msg.msg, *args, **kwargs
+    # )
 
     return syslog_msg
 
@@ -193,6 +206,7 @@ def main(args=None):
         default_integrations=False,
         integrations=[atexit_integration, dedupe_integration, logging_integration],
         before_send=process_syslog_fields,
+        environment=args.sentry_environment,
     )
 
     kwargs = {
